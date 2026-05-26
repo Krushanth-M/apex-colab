@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BootScreen from './components/BootScreen';
 import FluidBackground from './components/FluidBackground';
 import Sidebar from './components/Sidebar';
@@ -22,6 +22,10 @@ import { InvestorDashboard, InvestorStartups, InvestorAIMatches } from './views/
 import { CURRENT_USER } from './mockData';
 
 export default function App() {
+  const [lightMode, setLightMode] = useState(() => {
+    return localStorage.getItem('apex-light-mode') === 'true';
+  });
+
   // Restore accessibility preferences immediately before first render
   useState(() => {
     const rm = localStorage.getItem('apex-reduce-motion') === 'true';
@@ -29,6 +33,15 @@ export default function App() {
     if (rm) document.documentElement.classList.add('reduce-motion');
     if (hc) document.documentElement.classList.add('high-contrast');
   });
+
+  useEffect(() => {
+    if (lightMode) {
+      document.documentElement.classList.add('light-mode');
+    } else {
+      document.documentElement.classList.remove('light-mode');
+    }
+    localStorage.setItem('apex-light-mode', lightMode);
+  }, [lightMode]);
 
   const [booting, setBooting] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -47,9 +60,12 @@ export default function App() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const handleLogin = () => {
+  const handleLogin = (userData) => {
+    if (userData?.role) setRoleMode(userData.role);
+    if (userData?.role === 'investor') setTab('investor-dashboard');
+    else setTab('dashboard');
     setIsAuthenticated(true);
-    addToast('Logged in successfully as Krushanth M (Rathinam Institute of technology)!', 'success');
+    addToast(`Welcome back, Krushanth M! Entered as ${userData?.role === 'investor' ? 'Investor' : 'Maker'}.`, 'success');
   };
 
   const handleLogout = () => {
@@ -99,7 +115,7 @@ export default function App() {
           background: 'var(--bg)'
         }}>
           {/* Navigation Sidebar */}
-          <Sidebar tab={tab} setTab={setTab} user={CURRENT_USER} onLogout={handleLogout} roleMode={roleMode} setRoleMode={setRoleMode} />
+          <Sidebar tab={tab} setTab={setTab} user={CURRENT_USER} onLogout={handleLogout} roleMode={roleMode} lightMode={lightMode} setLightMode={setLightMode} />
 
           {/* Core Content Area */}
           <main style={{

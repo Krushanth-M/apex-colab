@@ -232,7 +232,7 @@ export default function FluidBackground() {
         style={{
           position: 'fixed',
           inset: 0,
-          backgroundColor: '#050505',
+          backgroundColor: 'var(--bg)',
           overflow: 'hidden',
           zIndex: 0,
           pointerEvents: 'none'

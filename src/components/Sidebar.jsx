@@ -11,7 +11,10 @@ import {
   Trophy,
   BarChart3,
   LogOut,
-  Sparkles,
+  TrendingUp,
+  Briefcase,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { CURRENT_USER } from '../mockData.js';
 
@@ -52,7 +55,22 @@ function getInitials(name = '') {
     .slice(0, 2);
 }
 
-export default function Sidebar({ tab, setTab, user, onLogout, roleMode = 'maker', setRoleMode }) {
+function playTone(freq, dur = 0.08, type = 'sine', vol = 0.04) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const g   = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(vol, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0, ctx.currentTime + dur);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur);
+  } catch (_) {}
+}
+function playBeep() { playTone(880, 0.05, 'sine', 0.03); }
+
+export default function Sidebar({ tab, setTab, user, onLogout, roleMode = 'maker', lightMode = false, setLightMode }) {
   const displayUser = user || CURRENT_USER;
   const xpPercent = displayUser?.xp && displayUser?.xpNext
     ? Math.min(100, Math.round((displayUser.xp / displayUser.xpNext) * 100))
@@ -130,106 +148,65 @@ export default function Sidebar({ tab, setTab, user, onLogout, roleMode = 'maker
           z-index: 40;
         }
 
-        /* ── Logo area ─────────────────────────────────────── */
+        /* ── Logo area ──────────────────────────────────────────── */
         .sidebar-logo {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 24px 20px 14px;
+          gap: 11px;
+          padding: 22px 18px 16px;
           flex-shrink: 0;
+          border-bottom: 1px solid rgba(255,255,255,0.04);
         }
 
         .sidebar-hex-icon {
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-          background: linear-gradient(135deg, #f3e5ab 0%, #aa7c11 100%);
+          width: 38px;
+          height: 38px;
+          clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+          background: linear-gradient(145deg, #fef9e7 0%, #f3e5ab 25%, #d4af37 60%, #8c6a0a 100%);
           display: flex;
           align-items: center;
-          justifyContent: center;
-          font-size: 18px;
+          justify-content: center;
+          font-size: 17px;
           font-weight: 900;
-          color: #000;
+          color: #0a0800;
           letter-spacing: -1px;
-          box-shadow: 0 0 24px rgba(212, 175, 55, 0.25), 0 2px 8px rgba(0,0,0,0.4);
-          clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+          box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), 0 2px 8px rgba(0,0,0,0.5);
           flex-shrink: 0;
+          font-family: 'Outfit', sans-serif;
         }
 
         .sidebar-logo-text {
           display: flex;
           flex-direction: column;
-          gap: 1px;
+          gap: 2px;
         }
 
         .sidebar-logo-name {
-          font-size: 15px;
-          font-weight: 700;
-          color: #f1f5f9;
-          letter-spacing: 0.01em;
-          line-height: 1.2;
+          font-size: 14.5px;
+          font-weight: 900;
+          font-family: 'Outfit', 'Space Grotesk', sans-serif;
+          background: linear-gradient(135deg, #fff 0%, #f3e5ab 50%, #d4af37 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          letter-spacing: -0.02em;
+          line-height: 1.1;
         }
 
-        .sidebar-logo-sub {
-          font-size: 9px;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          color: #d4af37;
-          line-height: 1;
-          display: flex;
+        .sidebar-role-badge {
+          display: inline-flex;
           align-items: center;
           gap: 4px;
-        }
-
-        .sidebar-logo-sub svg {
-          width: 9px;
-          height: 9px;
-        }
-
-        /* ── Role Switcher ─────────────────────────────────── */
-        .role-switcher-container {
-          padding: 4px 16px 14px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .role-switcher-pill {
-          display: flex;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 20px;
-          padding: 3px;
-          width: 100%;
-        }
-
-        .role-switcher-btn {
-          flex: 1;
-          padding: 6px 8px;
-          border-radius: 17px;
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 800;
-          cursor: pointer;
-          border: none;
-          background: transparent;
-          color: rgba(148, 163, 184, 0.6);
-          text-align: center;
-          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-          letter-spacing: 0.05em;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
-          outline: none;
+          padding: 2px 7px;
+          border-radius: 4px;
+          line-height: 1.5;
+          width: fit-content;
         }
 
-        .role-switcher-btn:hover {
-          color: #e2e8f0;
-        }
-
-        .role-switcher-btn.active {
-          background: linear-gradient(135deg, #f3e5ab 0%, #aa7c11 100%);
-          color: #050505;
-          box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
-        }
 
         /* ── Nav scroll area ───────────────────────────────── */
         .sidebar-nav {
@@ -457,31 +434,23 @@ export default function Sidebar({ tab, setTab, user, onLogout, roleMode = 'maker
         <div className="sidebar-logo">
           <div className="sidebar-hex-icon">A</div>
           <div className="sidebar-logo-text">
-            <span className="sidebar-logo-name">Apex Colab</span>
-            <span className="sidebar-logo-sub">
-              <Sparkles />
-              AI ECOSYSTEM
+            <span className="sidebar-logo-name">APEX COLAB</span>
+            <span
+              className="sidebar-role-badge"
+              style={{
+                background: roleMode === 'investor'
+                  ? 'rgba(16,185,129,0.12)'
+                  : 'rgba(212,175,55,0.12)',
+                color: roleMode === 'investor' ? '#6ee7b7' : '#d4af37',
+                border: `1px solid ${roleMode === 'investor' ? 'rgba(16,185,129,0.25)' : 'rgba(212,175,55,0.25)'}`,
+              }}
+            >
+              {roleMode === 'investor' ? <Briefcase size={8} /> : <Rocket size={8} />}
+              {roleMode === 'investor' ? 'Investor' : 'Maker'} Portal
             </span>
           </div>
         </div>
 
-        {/* ── Role Switcher ── */}
-        <div className="role-switcher-container">
-          <div className="role-switcher-pill">
-            <button
-              onClick={() => { setRoleMode('maker'); setTab('dashboard'); }}
-              className={`role-switcher-btn${roleMode === 'maker' ? ' active' : ''}`}
-            >
-              Maker Mode
-            </button>
-            <button
-              onClick={() => { setRoleMode('investor'); setTab('investor-dashboard'); }}
-              className={`role-switcher-btn${roleMode === 'investor' ? ' active' : ''}`}
-            >
-              Investor Mode
-            </button>
-          </div>
-        </div>
 
         {/* ── Navigation ── */}
         <nav className="sidebar-nav">
@@ -536,6 +505,34 @@ export default function Sidebar({ tab, setTab, user, onLogout, roleMode = 'maker
               />
             </div>
           </div>
+
+          {/* Theme Toggler */}
+          <button
+            onClick={() => { setLightMode(p => !p); playBeep(); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              width: '100%',
+              padding: '9px 12px',
+              borderRadius: '10px',
+              border: '1px solid var(--border)',
+              background: 'rgba(255, 255, 255, 0.03)',
+              color: 'var(--text-2)',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'background 0.18s, color 0.18s, border-color 0.18s',
+              outline: 'none',
+              marginBottom: '8px'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212, 175, 55, 0.07)'; e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.35)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
+          >
+            {lightMode ? <Moon size={15} /> : <Sun size={15} />}
+            <span>{lightMode ? 'Dark Theme' : 'Light Theme'}</span>
+          </button>
 
           {/* Logout */}
           <button className="sidebar-logout-btn" onClick={onLogout}>
