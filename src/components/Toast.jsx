@@ -17,7 +17,8 @@ const ICONS = {
 
 // ─── Single Toast ──────────────────────────────────────────────────────────────
 function ToastItem({ toast, dismiss }) {
-  const { id, message, type = 'info' } = toast;
+  const { id, message, text, type = 'info' } = toast;
+  const content = message || text;
   const elRef = useRef(null);
 
   // Trigger the fade-up animation on mount
@@ -48,7 +49,7 @@ function ToastItem({ toast, dismiss }) {
       </span>
 
       {/* Message */}
-      <span className="toast__message">{message}</span>
+      <span className="toast__message">{content}</span>
 
       {/* Dismiss button */}
       <button
