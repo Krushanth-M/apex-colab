@@ -1,0 +1,134 @@
+import { useState } from 'react';
+import BootScreen from './components/BootScreen';
+import FluidBackground from './components/FluidBackground';
+import Sidebar from './components/Sidebar';
+import AIChat from './components/AIChat';
+import Toast from './components/Toast';
+
+// Views
+import Auth from './views/Auth';
+import Dashboard from './views/Dashboard';
+import Profile from './views/Profile';
+import TeamBuilder from './views/TeamBuilder';
+import VirtualRooms from './views/VirtualRooms';
+import StartupHub from './views/StartupHub';
+import HackathonPortal from './views/HackathonPortal';
+import MentorConnect from './views/MentorConnect';
+import AITools from './views/AITools';
+import Leaderboard from './views/Leaderboard';
+import Analytics from './views/Analytics';
+
+import { CURRENT_USER } from './mockData';
+
+export default function App() {
+  // Restore accessibility preferences immediately before first render
+  useState(() => {
+    const rm = localStorage.getItem('apex-reduce-motion') === 'true';
+    const hc = localStorage.getItem('apex-high-contrast') === 'true';
+    if (rm) document.documentElement.classList.add('reduce-motion');
+    if (hc) document.documentElement.classList.add('high-contrast');
+  });
+
+  const [booting, setBooting] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [tab, setTab] = useState('dashboard');
+  const [toasts, setToasts] = useState([
+    { id: 1, type: 'info', text: 'Welcome to Apex Colab! Use the Apex AI co-pilot helper in the bottom left at any time.' }
+  ]);
+
+  const addToast = (text, type = 'info') => {
+    const newToast = { id: Date.now(), text, type };
+    setToasts((prev) => [...prev, newToast]);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    addToast('Logged in successfully as Krushanth M (Rathinam Institute of technology)!', 'success');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    addToast('Logged out of Apex Colab.', 'info');
+  };
+
+  if (booting) {
+    return <BootScreen onComplete={() => setBooting(false)} />;
+  }
+
+  return (
+    <div style={{
+      position: 'relative',
+      width: '100vw',
+      height: '100vh',
+      overflow: 'hidden',
+      display: 'flex',
+      background: '#020202',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '24px',
+      boxSizing: 'border-box'
+    }}>
+      {/* Dynamic fluid particle background */}
+      <FluidBackground />
+
+      {!isAuthenticated ? (
+        <div style={{ zIndex: 10, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Auth onLogin={handleLogin} />
+        </div>
+      ) : (
+        /* Laptop Viewport Frame Aspect Ratio Container */
+        <div className="card highlight-box" style={{
+          display: 'flex',
+          width: '100%',
+          height: '100%',
+          maxWidth: '1400px',
+          maxHeight: '880px',
+          aspectRatio: '16/10',
+          borderRadius: '24px',
+          border: '4px solid rgba(212, 175, 55, 0.42)',
+          boxShadow: '0 30px 100px rgba(0, 0, 0, 0.95), 0 0 50px rgba(212, 175, 55, 0.15)',
+          overflow: 'hidden',
+          position: 'relative',
+          zIndex: 10,
+          background: 'var(--bg)'
+        }}>
+          {/* Navigation Sidebar */}
+          <Sidebar tab={tab} setTab={setTab} user={CURRENT_USER} onLogout={handleLogout} />
+
+          {/* Core Content Area */}
+          <main style={{
+            flex: 1,
+            height: '100%',
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            zIndex: 5,
+            boxSizing: 'border-box'
+          }}>
+            {tab === 'dashboard' && <Dashboard />}
+            {tab === 'profile' && <Profile />}
+            {tab === 'team' && <TeamBuilder />}
+            {tab === 'rooms' && <VirtualRooms />}
+            {tab === 'startup' && <StartupHub />}
+            {tab === 'hackathon' && <HackathonPortal />}
+            {tab === 'mentor' && <MentorConnect />}
+            {tab === 'aitools' && <AITools />}
+            {tab === 'leaderboard' && <Leaderboard />}
+            {tab === 'analytics' && <Analytics />}
+          </main>
+
+          {/* Conversation AI copilot */}
+          <AIChat />
+        </div>
+      )}
+
+      {/* Global notifications Stack */}
+      <Toast toasts={toasts} dismiss={removeToast} />
+    </div>
+  );
+}
