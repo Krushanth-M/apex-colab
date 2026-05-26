@@ -1370,89 +1370,12 @@ export default function Auth({ onLogin }) {
           {authType === 'face' && tab === 'signin' ? (
             <FaceUnlock onLogin={() => onLogin({ mode: 'biometric', role: portalMode })} />
           ) : (
-            <>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
               {/* Logo */}
               <div className="auth-logo" style={{ marginBottom: 0 }}>
-                <ApexLogo size={72} />
+                <ApexLogo size={76} />
               </div>
-
-              {/* Security info card */}
-              <div style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginTop: '10px',
-                gap: '12px'
-              }}>
-                <div style={{
-                  background: 'rgba(212,175,55,0.03)',
-                  border: '1px dashed rgba(212,175,55,0.2)',
-                  borderRadius: '16px',
-                  padding: '16px 20px',
-                  textAlign: 'center',
-                  width: '100%',
-                  maxWidth: '280px',
-                  boxSizing: 'border-box'
-                }}>
-                  <span style={{
-                    fontSize: '11px',
-                    fontWeight: 800,
-                    color: '#d4af37',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                    display: 'block',
-                    marginBottom: '4px'
-                  }}>🔒 Security Protocol</span>
-                  <p style={{
-                    fontSize: '12px',
-                    color: 'rgba(148, 163, 184, 0.6)',
-                    margin: 0,
-                    lineHeight: 1.4
-                  }}>
-                    All operations are secured via biometric facial signature matching and end-to-end ledger verification.
-                  </p>
-                </div>
-
-                {/* System Diagnostics Status */}
-                <div style={{
-                  width: '100%',
-                  maxWidth: '280px',
-                  background: 'rgba(0,0,0,0.35)',
-                  border: '1px solid rgba(212,175,55,0.1)',
-                  borderRadius: '12px',
-                  padding: '12px 16px',
-                  fontFamily: "'Space Grotesk', monospace",
-                  fontSize: '10px',
-                  color: 'rgba(212,175,55,0.65)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '6px',
-                  boxSizing: 'border-box',
-                  boxShadow: 'inset 0 0 10px rgba(0,0,0,0.8)'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(212,175,55,0.15)', paddingBottom: '4px', marginBottom: '2px' }}>
-                    <span style={{ fontWeight: 800, letterSpacing: '0.04em' }}>SYSTEM OVERVIEW</span>
-                    <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 800 }}>
-                      <span className="dot dot-green" style={{ width: '4px', height: '4px' }} /> ONLINE
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Active Ecosystem Nodes</span>
-                    <span style={{ color: '#f3e5ab', fontWeight: 700 }}>147 online</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Security Layer</span>
-                    <span style={{ color: '#f3e5ab', fontWeight: 700 }}>Decentralized</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Biometric Signature</span>
-                    <span style={{ color: '#f3e5ab', fontWeight: 700 }}>AES-GCM-256</span>
-                  </div>
-                </div>
-              </div>
-            </>
+            </div>
           )}
         </div>
 
