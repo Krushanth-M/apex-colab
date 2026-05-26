@@ -738,14 +738,14 @@ function FaceUnlock({ onLogin }) {
 /* ─────────────────────────────────────────────────────────
    Sign In Form
 ───────────────────────────────────────────────────────── */
-function SignInForm({ onLogin, triggerOtp, portalMode, authType, setAuthType }) {
+function SignInForm({ onLogin, portalMode, authType, setAuthType }) {
   const [email,     setEmail]     = useState('');
   const [password,  setPassword]  = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) return;
-    triggerOtp(email, () => onLogin({ email, mode: 'signin', role: portalMode }));
+    onLogin({ email, mode: 'signin', role: portalMode });
   };
 
   return (
@@ -828,7 +828,7 @@ function SignInForm({ onLogin, triggerOtp, portalMode, authType, setAuthType }) 
               letterSpacing: '0.01em',
             }}
           >
-            <span>Continue with OTP</span>
+            <span>Sign In</span>
             <ChevronRight size={17} />
           </button>
         </form>
@@ -1397,7 +1397,7 @@ export default function Auth({ onLogin }) {
           {/* Forms */}
           <div style={{ flex: 1 }}>
             {tab === 'signin'
-              ? <SignInForm onLogin={onLogin} triggerOtp={handleTriggerOtp} portalMode={portalMode} authType={authType} setAuthType={setAuthType} />
+              ? <SignInForm onLogin={onLogin} portalMode={portalMode} authType={authType} setAuthType={setAuthType} />
               : <RegisterForm onLogin={onLogin} portalMode={portalMode} />
             }
           </div>
