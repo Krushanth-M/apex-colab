@@ -52,11 +52,64 @@ function getInitials(name = '') {
     .slice(0, 2);
 }
 
-export default function Sidebar({ tab, setTab, user, onLogout }) {
+export default function Sidebar({ tab, setTab, user, onLogout, roleMode = 'maker', setRoleMode }) {
   const displayUser = user || CURRENT_USER;
-  const xpPercent = displayUser?.xp && displayUser?.xpMax
-    ? Math.min(100, Math.round((displayUser.xp / displayUser.xpMax) * 100))
+  const xpPercent = displayUser?.xp && displayUser?.xpNext
+    ? Math.min(100, Math.round((displayUser.xp / displayUser.xpNext) * 100))
     : 62;
+
+  // Dynamically configure nav groups based on active roleMode
+  const navGroups = roleMode === 'investor'
+    ? [
+        {
+          label: 'INVESTOR MAIN',
+          items: [
+            { id: 'investor-dashboard', icon: LayoutDashboard, label: 'Investor Portal' },
+            { id: 'investor-startups',  icon: Rocket,          label: 'Browse Startups' },
+            { id: 'investor-ai-matches',icon: Brain,           label: 'AI Match Finder' },
+          ]
+        },
+        {
+          label: 'COLLABORATE',
+          items: [
+            { id: 'rooms',     icon: Video,           label: 'Virtual Rooms' },
+          ]
+        },
+        {
+          label: 'STUDENTS',
+          items: [
+            { id: 'leaderboard', icon: Trophy,    label: 'Leaderboard' },
+            { id: 'analytics',   icon: BarChart3, label: 'Analytics' },
+          ]
+        }
+      ]
+    : [
+        {
+          label: 'MAIN',
+          items: [
+            { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+            { id: 'profile',   icon: User,            label: 'My Profile' },
+            { id: 'team',      icon: Users,           label: 'Team Builder' },
+            { id: 'rooms',     icon: Video,           label: 'Virtual Rooms' },
+          ],
+        },
+        {
+          label: 'STARTUP',
+          items: [
+            { id: 'startup',   icon: Rocket,          label: 'Startup Hub' },
+            { id: 'hackathon', icon: Zap,             label: 'Hackathons' },
+            { id: 'mentor',    icon: GraduationCap,   label: 'Mentors' },
+          ],
+        },
+        {
+          label: 'AI TOOLS',
+          items: [
+            { id: 'aitools',     icon: Brain,     label: 'AI Tools' },
+            { id: 'leaderboard', icon: Trophy,    label: 'Leaderboard' },
+            { id: 'analytics',   icon: BarChart3, label: 'Analytics' },
+          ],
+        },
+      ];
 
   return (
     <>
@@ -64,7 +117,7 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
         .sidebar-root {
           width: 260px;
           min-width: 260px;
-          height: 100vh;
+          height: 100%;
           display: flex;
           flex-direction: column;
           background: rgba(6, 9, 18, 0.85);
@@ -82,8 +135,7 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
           display: flex;
           align-items: center;
           gap: 12px;
-          padding: 24px 20px 20px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          padding: 24px 20px 14px;
           flex-shrink: 0;
         }
 
@@ -91,15 +143,15 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
           width: 40px;
           height: 40px;
           border-radius: 10px;
-          background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #06b6d4 100%);
+          background: linear-gradient(135deg, #f3e5ab 0%, #aa7c11 100%);
           display: flex;
           align-items: center;
-          justify-content: center;
+          justifyContent: center;
           font-size: 18px;
           font-weight: 900;
-          color: #fff;
+          color: #000;
           letter-spacing: -1px;
-          box-shadow: 0 0 24px rgba(124, 58, 237, 0.45), 0 2px 8px rgba(0,0,0,0.4);
+          box-shadow: 0 0 24px rgba(212, 175, 55, 0.25), 0 2px 8px rgba(0,0,0,0.4);
           clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
           flex-shrink: 0;
         }
@@ -122,7 +174,7 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
           font-size: 9px;
           font-weight: 700;
           letter-spacing: 0.12em;
-          color: #7c3aed;
+          color: #d4af37;
           line-height: 1;
           display: flex;
           align-items: center;
@@ -132,6 +184,51 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
         .sidebar-logo-sub svg {
           width: 9px;
           height: 9px;
+        }
+
+        /* ── Role Switcher ─────────────────────────────────── */
+        .role-switcher-container {
+          padding: 4px 16px 14px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .role-switcher-pill {
+          display: flex;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 20px;
+          padding: 3px;
+          width: 100%;
+        }
+
+        .role-switcher-btn {
+          flex: 1;
+          padding: 6px 8px;
+          border-radius: 17px;
+          font-size: 10px;
+          font-weight: 800;
+          cursor: pointer;
+          border: none;
+          background: transparent;
+          color: rgba(148, 163, 184, 0.6);
+          text-align: center;
+          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          outline: none;
+        }
+
+        .role-switcher-btn:hover {
+          color: #e2e8f0;
+        }
+
+        .role-switcher-btn.active {
+          background: linear-gradient(135deg, #f3e5ab 0%, #aa7c11 100%);
+          color: #050505;
+          box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
         }
 
         /* ── Nav scroll area ───────────────────────────────── */
@@ -190,10 +287,10 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
         }
 
         .sidebar-link.active {
-          background: linear-gradient(90deg, rgba(124, 58, 237, 0.18) 0%, rgba(79, 70, 229, 0.10) 100%);
-          color: #c4b5fd;
+          background: linear-gradient(90deg, rgba(212, 175, 55, 0.12) 0%, rgba(170, 124, 17, 0.05) 100%);
+          color: #f3e5ab;
           font-weight: 600;
-          box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.22);
+          box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.22);
         }
 
         .sidebar-link.active::before {
@@ -204,7 +301,7 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
           bottom: 18%;
           width: 3px;
           border-radius: 0 3px 3px 0;
-          background: linear-gradient(180deg, #7c3aed, #4f46e5);
+          background: linear-gradient(180deg, #f3e5ab, #aa7c11);
         }
 
         .sidebar-link-icon {
@@ -215,7 +312,7 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
         }
 
         .sidebar-link.active .sidebar-link-icon {
-          color: #a78bfa;
+          color: #f3e5ab;
         }
 
         /* ── Divider ───────────────────────────────────────── */
@@ -243,17 +340,17 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
           width: 38px;
           height: 38px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 55%, #06b6d4 100%);
+          background: linear-gradient(135deg, #f3e5ab 0%, #aa7c11 100%);
           display: flex;
           align-items: center;
-          justify-content: center;
+          justifyContent: center;
           font-size: 13px;
           font-weight: 700;
-          color: #fff;
+          color: #000;
           letter-spacing: 0.02em;
           flex-shrink: 0;
-          box-shadow: 0 0 18px rgba(124, 58, 237, 0.4);
-          border: 1.5px solid rgba(167, 139, 250, 0.3);
+          box-shadow: 0 0 18px rgba(212, 175, 55, 0.18);
+          border: 1.5px solid rgba(212, 175, 55, 0.3);
         }
 
         .sidebar-user-info {
@@ -303,7 +400,7 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
         .sidebar-xp-value {
           font-size: 10px;
           font-weight: 700;
-          color: #a78bfa;
+          color: #d4af37;
         }
 
         .xp-bar-track {
@@ -317,8 +414,8 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
         .xp-bar-fill {
           height: 100%;
           border-radius: 99px;
-          background: linear-gradient(90deg, #7c3aed 0%, #4f46e5 50%, #06b6d4 100%);
-          box-shadow: 0 0 8px rgba(124, 58, 237, 0.5);
+          background: linear-gradient(90deg, #f3e5ab 0%, #aa7c11 100%);
+          box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
           transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -326,7 +423,7 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
         .sidebar-logout-btn {
           display: flex;
           align-items: center;
-          justify-content: center;
+          justifyContent: center;
           gap: 8px;
           width: 100%;
           padding: 9px 12px;
@@ -368,9 +465,27 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
           </div>
         </div>
 
+        {/* ── Role Switcher ── */}
+        <div className="role-switcher-container">
+          <div className="role-switcher-pill">
+            <button
+              onClick={() => { setRoleMode('maker'); setTab('dashboard'); }}
+              className={`role-switcher-btn${roleMode === 'maker' ? ' active' : ''}`}
+            >
+              Maker Mode
+            </button>
+            <button
+              onClick={() => { setRoleMode('investor'); setTab('investor-dashboard'); }}
+              className={`role-switcher-btn${roleMode === 'investor' ? ' active' : ''}`}
+            >
+              Investor Mode
+            </button>
+          </div>
+        </div>
+
         {/* ── Navigation ── */}
         <nav className="sidebar-nav">
-          {NAV_GROUPS.map((group, gi) => (
+          {navGroups.map((group, gi) => (
             <div className="sidebar-group" key={group.label}>
               {gi > 0 && <div className="sidebar-divider" />}
               <div className="sidebar-group-label">{group.label}</div>
@@ -407,7 +522,7 @@ export default function Sidebar({ tab, setTab, user, onLogout }) {
             <div className="sidebar-xp-label-row">
               <span className="sidebar-xp-label">XP Progress</span>
               <span className="sidebar-xp-value">
-                {displayUser?.xp ?? 0} / {displayUser?.xpMax ?? 1000}
+                {displayUser?.xp ?? 0} / {displayUser?.xpNext ?? 4000}
               </span>
             </div>
             <div className="xp-bar-track">

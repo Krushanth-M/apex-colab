@@ -17,6 +17,7 @@ import MentorConnect from './views/MentorConnect';
 import AITools from './views/AITools';
 import Leaderboard from './views/Leaderboard';
 import Analytics from './views/Analytics';
+import { InvestorDashboard, InvestorStartups, InvestorAIMatches } from './views/InvestorHub';
 
 import { CURRENT_USER } from './mockData';
 
@@ -32,6 +33,7 @@ export default function App() {
   const [booting, setBooting] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [tab, setTab] = useState('dashboard');
+  const [roleMode, setRoleMode] = useState('maker');
   const [toasts, setToasts] = useState([
     { id: 1, type: 'info', text: 'Welcome to Apex Colab! Use the Apex AI co-pilot helper in the bottom left at any time.' }
   ]);
@@ -97,7 +99,7 @@ export default function App() {
           background: 'var(--bg)'
         }}>
           {/* Navigation Sidebar */}
-          <Sidebar tab={tab} setTab={setTab} user={CURRENT_USER} onLogout={handleLogout} />
+          <Sidebar tab={tab} setTab={setTab} user={CURRENT_USER} onLogout={handleLogout} roleMode={roleMode} setRoleMode={setRoleMode} />
 
           {/* Core Content Area */}
           <main style={{
@@ -120,6 +122,9 @@ export default function App() {
             {tab === 'aitools' && <AITools />}
             {tab === 'leaderboard' && <Leaderboard />}
             {tab === 'analytics' && <Analytics />}
+            {tab === 'investor-dashboard' && <InvestorDashboard setTab={setTab} />}
+            {tab === 'investor-startups' && <InvestorStartups />}
+            {tab === 'investor-ai-matches' && <InvestorAIMatches />}
           </main>
 
           {/* Conversation AI copilot */}
