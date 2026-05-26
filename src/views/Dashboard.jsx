@@ -8,105 +8,104 @@ import {
   TrendingUp,
   Star,
   Clock,
-  Bell,
   ChevronRight,
+  Briefcase
 } from 'lucide-react';
 import {
   CURRENT_USER,
   ACTIVITY_FEED,
   CONTRIBUTION_HEATMAP,
-  HACKATHONS,
-  STARTUPS,
+  HACKATHONS
 } from '../mockData';
 
-/* ─────────────────────────────────────────────
-   Helpers
-───────────────────────────────────────────── */
+/* ── Heatmap Color Mapper ─────────────────────────────── */
 const heatmapColor = (level) => {
   switch (level) {
-    case 1: return 'rgba(124,58,237,0.25)';
-    case 2: return 'rgba(124,58,237,0.5)';
-    case 3: return 'rgba(6,182,212,0.6)';
-    case 4: return 'rgba(6,182,212,0.9)';
-    default: return 'rgba(255,255,255,0.05)';
+    case 1: return 'rgba(212, 175, 55, 0.16)';
+    case 2: return 'rgba(212, 175, 55, 0.38)';
+    case 3: return 'rgba(212, 175, 55, 0.65)';
+    case 4: return 'rgba(212, 175, 55, 0.95)';
+    default: return 'rgba(212, 175, 55, 0.04)';
   }
 };
 
+/* ── Activity Feed Icons ─────────────────────────────── */
 const activityIcon = (type) => {
   const icons = {
-    star:    <Star size={14} />,
-    zap:     <Zap size={14} />,
-    users:   <Users size={14} />,
-    trophy:  <Trophy size={14} />,
-    rocket:  <Rocket size={14} />,
-    trending: <TrendingUp size={14} />,
+    match:     <Users size={14} />,
+    hackathon: <Trophy size={14} />,
+    xp:        <Zap size={14} />,
+    idea:      <Rocket size={14} />,
+    mentor:    <Briefcase size={14} />,
+    badge:     <Star size={14} />,
   };
   return icons[type] || <Zap size={14} />;
 };
 
-/* ─────────────────────────────────────────────
-   Sub-components
-───────────────────────────────────────────── */
-
-/** Small glass stat box used in the hero row */
+/* ── Quick Stat Hero Widget ───────────────────────────── */
 const QuickStat = ({ label, value, color }) => (
   <div
+    className="card"
     style={{
-      background: 'rgba(255,255,255,0.04)',
-      border: '1px solid rgba(255,255,255,0.09)',
-      borderRadius: 14,
       padding: '14px 20px',
-      minWidth: 110,
+      minWidth: 120,
       textAlign: 'center',
-      backdropFilter: 'blur(12px)',
+      border: '1.5px solid rgba(212, 175, 55, 0.22)',
+      background: 'rgba(212, 175, 55, 0.02)',
+      borderRadius: 14,
     }}
   >
-    <div style={{ fontSize: 22, fontWeight: 700, color: color || '#fff', fontFamily: 'Space Grotesk, sans-serif' }}>
+    <div style={{
+      fontSize: 22,
+      fontWeight: 900,
+      color: color || 'var(--gold-500)',
+      fontFamily: "'Outfit', 'Space Grotesk', sans-serif",
+      lineHeight: 1
+    }}>
       {value}
     </div>
-    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2, letterSpacing: 0.4 }}>
+    <div style={{
+      fontSize: 10.5,
+      fontWeight: 700,
+      color: 'var(--text-3)',
+      marginTop: 6,
+      letterSpacing: '0.04em',
+      textTransform: 'uppercase'
+    }}>
       {label}
     </div>
   </div>
 );
 
-/** XP progress bar */
+/* ── XP Progress Tracker ───────────────────────────────── */
 const XpBar = ({ xp, xpNext }) => {
   const pct = Math.min(100, Math.round((xp / xpNext) * 100));
   return (
     <div style={{ marginTop: 14, maxWidth: 420 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>XP Progress</span>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+        <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-2)' }}>XP Progress</span>
+        <span style={{ fontSize: 12.5, color: 'var(--gold-500)', fontWeight: 800 }}>
           {xp.toLocaleString()} / {xpNext.toLocaleString()} XP
         </span>
       </div>
-      <div
-        style={{
-          height: 8,
-          borderRadius: 99,
-          background: 'rgba(255,255,255,0.08)',
-          overflow: 'hidden',
-        }}
-      >
+      <div className="progress-track" style={{ height: 7 }}>
         <div
-          style={{
-            height: '100%',
-            width: `${pct}%`,
-            borderRadius: 99,
-            background: 'linear-gradient(90deg, #7c3aed, #06b6d4)',
-            transition: 'width 0.6s ease',
-          }}
+          className="progress-fill progress-violet"
+          style={{ width: `${pct}%` }}
+          role="progressbar"
+          aria-valuenow={pct}
+          aria-valuemin={0}
+          aria-valuemax={100}
         />
       </div>
-      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
-        {pct}% to next level
+      <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 5 }}>
+        {pct}% completed to next level
       </div>
     </div>
   );
 };
 
-/** One of the 4 big stat cards */
+/* ── Primary Stat Card ────────────────────────────────── */
 const StatCard = ({ icon: Icon, value, label, trend, color, delay }) => (
   <div
     className={`card fade-up ${delay}`}
@@ -115,6 +114,7 @@ const StatCard = ({ icon: Icon, value, label, trend, color, delay }) => (
       display: 'flex',
       flexDirection: 'column',
       gap: 12,
+      border: '1.5px solid rgba(212, 175, 55, 0.18)',
     }}
   >
     <div
@@ -122,7 +122,7 @@ const StatCard = ({ icon: Icon, value, label, trend, color, delay }) => (
         width: 40,
         height: 40,
         borderRadius: 10,
-        background: `${color}22`,
+        background: `${color}18`,
         border: `1px solid ${color}44`,
         display: 'flex',
         alignItems: 'center',
@@ -135,19 +135,20 @@ const StatCard = ({ icon: Icon, value, label, trend, color, delay }) => (
     <div>
       <div
         style={{
-          fontSize: 30,
-          fontWeight: 700,
-          fontFamily: 'Space Grotesk, sans-serif',
-          color: '#fff',
+          fontSize: 32,
+          fontWeight: 900,
+          fontFamily: "'Outfit', 'Space Grotesk', sans-serif",
+          color: 'var(--text)',
           lineHeight: 1.1,
+          letterSpacing: '-0.03em'
         }}
       >
         {value}
       </div>
-      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 3 }}>{label}</div>
+      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-2)', marginTop: 3 }}>{label}</div>
     </div>
     {trend && (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#22c55e' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 700, color: '#10b981' }}>
         <TrendingUp size={12} />
         {trend}
       </div>
@@ -155,7 +156,7 @@ const StatCard = ({ icon: Icon, value, label, trend, color, delay }) => (
   </div>
 );
 
-/** Single activity feed row */
+/* ── Single Activity Feed Item ────────────────────────── */
 const ActivityItem = ({ item }) => (
   <div
     style={{
@@ -163,7 +164,7 @@ const ActivityItem = ({ item }) => (
       alignItems: 'flex-start',
       gap: 12,
       padding: '12px 0',
-      borderBottom: '1px solid rgba(255,255,255,0.05)',
+      borderBottom: '1px solid var(--border)',
     }}
   >
     <div
@@ -171,124 +172,124 @@ const ActivityItem = ({ item }) => (
         width: 32,
         height: 32,
         borderRadius: 8,
-        background: 'rgba(124,58,237,0.18)',
-        border: '1px solid rgba(124,58,237,0.3)',
+        background: 'rgba(212, 175, 55, 0.08)',
+        border: '1px solid rgba(212, 175, 55, 0.25)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#a78bfa',
+        color: 'var(--gold-500)',
         flexShrink: 0,
       }}
     >
-      {activityIcon(item.icon || item.type)}
+      {activityIcon(item.type)}
     </div>
     <div style={{ flex: 1, minWidth: 0 }}>
-      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5 }}>
-        {item.text || item.description}
+      <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.5 }}>
+        {item.text}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 3, color: 'rgba(255,255,255,0.35)', fontSize: 11 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4, color: 'var(--text-3)', fontSize: 11 }}>
         <Clock size={10} />
-        {item.time || item.timestamp}
+        {item.time}
       </div>
     </div>
   </div>
 );
 
-/** Single hackathon row */
+/* ── Single Hackathon Listing ─────────────────────────── */
 const HackathonItem = ({ hackathon }) => (
   <div
     style={{
       padding: '14px 0',
-      borderBottom: '1px solid rgba(255,255,255,0.05)',
+      borderBottom: '1px solid var(--border)',
     }}
   >
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', fontFamily: 'Space Grotesk, sans-serif' }}>
+        <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)', fontFamily: "'Space Grotesk', sans-serif" }}>
           {hackathon.name}
         </div>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
-          {hackathon.host || hackathon.organizer}
+        <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 2 }}>
+          Organized by {hackathon.host}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 5, fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6, fontSize: 11, color: 'var(--text-3)' }}>
           <Clock size={10} />
-          Deadline: {hackathon.deadline || hackathon.date}
+          Deadline: {hackathon.deadline}
         </div>
       </div>
       <div
         style={{
-          background: 'rgba(6,182,212,0.15)',
-          border: '1px solid rgba(6,182,212,0.35)',
-          color: '#06b6d4',
-          borderRadius: 99,
-          padding: '3px 10px',
+          background: 'rgba(212, 175, 55, 0.12)',
+          border: '1.5px solid rgba(212, 175, 55, 0.35)',
+          color: '#d4af37',
+          borderRadius: 20,
+          padding: '4px 12px',
           fontSize: 11,
-          fontWeight: 600,
+          fontWeight: 800,
           whiteSpace: 'nowrap',
           flexShrink: 0,
+          fontFamily: "'Space Grotesk', sans-serif"
         }}
       >
-        {hackathon.prize || hackathon.prizePool}
+        {hackathon.prize}
       </div>
     </div>
   </div>
 );
 
-/* ─────────────────────────────────────────────
-   Main Dashboard
-───────────────────────────────────────────── */
-const Dashboard = () => {
+/* ── Main Dashboard component ── */
+export default function Dashboard() {
   const user = CURRENT_USER;
-  const upcomingHackathons = HACKATHONS.filter((h) => h.status === 'open' || !h.status).slice(0, 3);
+  const upcomingHackathons = HACKATHONS.filter((h) => h.status === 'open').slice(0, 3);
 
   return (
     <div
+      className="fade-in"
       style={{
         width: '100%',
-        padding: '40px 48px',
+        padding: '36px 44px',
         overflowY: 'auto',
         boxSizing: 'border-box',
-        minHeight: '100vh',
       }}
     >
-      {/* ── Section 1: Welcome Header ── */}
-      <section className="fade-up d1" style={{ marginBottom: 40 }}>
+      {/* ── Welcome Header ── */}
+      <section className="fade-up d1" style={{ marginBottom: 32 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 24 }}>
-          {/* Left: greeting + XP bar */}
+          {/* Greeting */}
           <div style={{ flex: 1, minWidth: 280 }}>
             <h1
               style={{
-                fontFamily: 'Space Grotesk, sans-serif',
+                fontFamily: "'Outfit', sans-serif",
                 fontSize: 32,
-                fontWeight: 700,
-                color: '#fff',
+                fontWeight: 900,
+                color: 'var(--text)',
                 margin: 0,
-                lineHeight: 1.2,
+                lineHeight: 1.15,
+                letterSpacing: '-0.03em'
               }}
             >
               Good morning, {user.name} 👋
             </h1>
-            <p style={{ margin: '8px 0 0', fontSize: 15, color: 'rgba(255,255,255,0.5)' }}>
+            <p style={{ margin: '8px 0 0', fontSize: 14.5, color: 'var(--text-2)', fontWeight: 500 }}>
               Level {user.level} Builder · {user.streak} day streak 🔥
             </p>
             <XpBar xp={user.xp} xpNext={user.xpNext} />
           </div>
 
-          {/* Right: quick stats */}
+          {/* Quick stats widgets */}
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-            <QuickStat label="Total XP" value={user.xp?.toLocaleString()} color="#a78bfa" />
-            <QuickStat label="Global Rank" value={`#${user.globalRank || user.rank || '—'}`} color="#06b6d4" />
-            <QuickStat label="Hackathons Won" value={user.hackathonsWon ?? 0} color="#fbbf24" />
+            <QuickStat label="Total XP" value={user.xp?.toLocaleString()} color="var(--gold-500)" />
+            <QuickStat label="Global Rank" value={`#${user.rank || '—'}`} color="var(--gold-500)" />
+            <QuickStat label="Campus Rank" value={`#${user.campusRank || '—'}`} color="var(--gold-500)" />
           </div>
         </div>
       </section>
 
-      {/* ── Section 2: 4 Stat Cards ── */}
-      <section style={{ marginBottom: 40 }}>
+      {/* ── Stats Grid ── */}
+      <section style={{ marginBottom: 32 }}>
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
             gap: 20,
           }}
         >
@@ -297,7 +298,7 @@ const Dashboard = () => {
             value="3"
             label="Active Teams"
             trend="+1 this month"
-            color="#06b6d4"
+            color="var(--gold-500)"
             delay="d1"
           />
           <StatCard
@@ -305,7 +306,7 @@ const Dashboard = () => {
             value="87"
             label="Startup Score"
             trend="+5 pts"
-            color="#7c3aed"
+            color="var(--gold-300)"
             delay="d2"
           />
           <StatCard
@@ -313,7 +314,7 @@ const Dashboard = () => {
             value="+340"
             label="XP This Week"
             trend="Above average"
-            color="#f59e0b"
+            color="var(--gold-500)"
             delay="d3"
           />
           <StatCard
@@ -321,30 +322,30 @@ const Dashboard = () => {
             value="#2"
             label="Campus Rank"
             trend="↑ 1 place"
-            color="#22c55e"
+            color="var(--gold-300)"
             delay="d4"
           />
         </div>
       </section>
 
-      {/* ── Section 3: Two-column Feed + Hackathons ── */}
-      <section style={{ display: 'flex', gap: 24, marginBottom: 40, alignItems: 'flex-start' }}>
-        {/* Left — Activity Feed (60%) */}
-        <div className="card fade-up d3" style={{ flex: '0 0 60%', padding: '24px 28px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+      {/* ── Feed & Hackathons split ── */}
+      <section style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 24, marginBottom: 32, alignItems: 'start' }}>
+        {/* Left: Activity Feed */}
+        <div className="card fade-up d3" style={{ padding: '24px 28px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <div>
               <h2
                 style={{
-                  fontFamily: 'Space Grotesk, sans-serif',
-                  fontSize: 17,
-                  fontWeight: 700,
-                  color: '#fff',
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontSize: 16,
+                  fontWeight: 800,
+                  color: 'var(--text)',
                   margin: 0,
                 }}
               >
                 Live Activity
               </h2>
-              <p style={{ margin: '3px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+              <p style={{ margin: '3px 0 0', fontSize: 11.5, color: 'var(--text-3)' }}>
                 Real-time campus updates
               </p>
             </div>
@@ -353,148 +354,127 @@ const Dashboard = () => {
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                background: '#22c55e',
-                boxShadow: '0 0 8px #22c55e',
-                animation: 'pulse 2s infinite',
+                background: '#10b981',
+                boxShadow: '0 0 10px rgba(16,185,129,0.5)',
+                animation: 'neon-ping 2s infinite',
               }}
             />
           </div>
-          <div style={{ marginTop: 8 }}>
+          <div style={{ marginTop: 12 }}>
             {ACTIVITY_FEED.map((item, i) => (
               <ActivityItem key={item.id || i} item={item} />
             ))}
           </div>
         </div>
 
-        {/* Right — Upcoming Hackathons (40%) */}
-        <div className="card fade-up d4" style={{ flex: '0 0 calc(40% - 24px)', padding: '24px 28px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+        {/* Right: Hackathons */}
+        <div className="card fade-up d4" style={{ padding: '24px 28px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <div>
               <h2
                 style={{
-                  fontFamily: 'Space Grotesk, sans-serif',
-                  fontSize: 17,
-                  fontWeight: 700,
-                  color: '#fff',
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontSize: 16,
+                  fontWeight: 800,
+                  color: 'var(--text)',
                   margin: 0,
                 }}
               >
                 Upcoming Hackathons
               </h2>
-              <p style={{ margin: '3px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-                Don't miss the deadlines
+              <p style={{ margin: '3px 0 0', fontSize: 11.5, color: 'var(--text-3)' }}>
+                Explore open challenges
               </p>
             </div>
-            <button
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#7c3aed',
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 3,
-                padding: 0,
-              }}
-            >
-              View All <ChevronRight size={13} />
-            </button>
           </div>
-          <div style={{ marginTop: 8 }}>
+          <div style={{ marginTop: 12 }}>
             {upcomingHackathons.map((h, i) => (
               <HackathonItem key={h.id || i} hackathon={h} />
             ))}
           </div>
           <button
+            className="btn btn-violet btn-sm"
             style={{
-              marginTop: 16,
+              marginTop: 18,
               width: '100%',
-              padding: '10px',
-              borderRadius: 10,
-              border: '1px solid rgba(124,58,237,0.35)',
-              background: 'rgba(124,58,237,0.1)',
-              color: '#a78bfa',
+              padding: '11px',
+              borderRadius: 12,
               fontSize: 13,
-              fontWeight: 600,
-              cursor: 'pointer',
+              fontWeight: 800,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: 6,
-              transition: 'background 0.2s',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(124,58,237,0.2)')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(124,58,237,0.1)')}
           >
-            Browse All Hackathons <ArrowRight size={14} />
+            Browse All Hackathons <ArrowRight size={13} />
           </button>
         </div>
       </section>
 
-      {/* ── Section 4: Contribution Heatmap ── */}
-      <section className="card fade-up d5" style={{ padding: '24px 28px', marginBottom: 40 }}>
-        <div style={{ marginBottom: 18 }}>
-          <h2
-            style={{
-              fontFamily: 'Space Grotesk, sans-serif',
-              fontSize: 17,
-              fontWeight: 700,
-              color: '#fff',
-              margin: 0,
-            }}
-          >
-            Contribution Activity
-          </h2>
-          <p style={{ margin: '3px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-            6 months · {CONTRIBUTION_HEATMAP.flat().filter((v) => v > 0).length} active days
-          </p>
-        </div>
-
-        {/* Legend */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, justifyContent: 'flex-end' }}>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Less</span>
-          {[0, 1, 2, 3, 4].map((lvl) => (
-            <div
-              key={lvl}
+      {/* ── Heatmap ── */}
+      <section className="card fade-up d5" style={{ padding: '24px 28px', marginBottom: 20 }}>
+        <div style={{ marginBottom: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <h2
               style={{
-                width: 12,
-                height: 12,
-                borderRadius: 3,
-                background: heatmapColor(lvl),
-                border: '1px solid rgba(255,255,255,0.08)',
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: 16,
+                fontWeight: 800,
+                color: 'var(--text)',
+                margin: 0,
               }}
-            />
-          ))}
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>More</span>
+            >
+              Contribution Activity
+            </h2>
+            <p style={{ margin: '3px 0 0', fontSize: 11.5, color: 'var(--text-3)' }}>
+              6 months · {CONTRIBUTION_HEATMAP.flat().filter((v) => v > 0).length} active days
+            </p>
+          </div>
+
+          {/* Legend */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 600 }}>Less</span>
+            {[0, 1, 2, 3, 4].map((lvl) => (
+              <div
+                key={lvl}
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: 3,
+                  background: heatmapColor(lvl),
+                  border: '1.5px solid var(--border)',
+                }}
+              />
+            ))}
+            <span style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 600 }}>More</span>
+          </div>
         </div>
 
-        {/* Grid: rows = days (7), columns = weeks */}
+        {/* Heatmap Grid */}
         <div
           style={{
             display: 'flex',
             gap: 3,
             overflowX: 'auto',
             paddingBottom: 4,
+            width: '100%',
           }}
         >
-          {/* Each column = one week */}
           {CONTRIBUTION_HEATMAP.map((week, wIdx) => (
             <div key={wIdx} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               {week.map((level, dIdx) => (
                 <div
                   key={dIdx}
-                  className="heatmap-cell"
                   title={`Week ${wIdx + 1}, Day ${dIdx + 1}: level ${level}`}
                   style={{
                     width: 13,
                     height: 13,
                     borderRadius: 3,
                     background: heatmapColor(level),
-                    border: '1px solid rgba(255,255,255,0.06)',
+                    border: '1px solid var(--border)',
                     cursor: 'default',
-                    transition: 'transform 0.15s',
+                    transition: 'transform 0.15s ease',
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.4)')}
                   onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -506,6 +486,4 @@ const Dashboard = () => {
       </section>
     </div>
   );
-};
-
-export default Dashboard;
+}
