@@ -87,7 +87,7 @@ export default function App() {
       background: '#020202',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '24px',
+      padding: '0px',
       boxSizing: 'border-box'
     }}>
       {/* Dynamic fluid particle background */}
@@ -98,17 +98,11 @@ export default function App() {
           <Auth onLogin={handleLogin} />
         </div>
       ) : (
-        /* Laptop Viewport Frame Aspect Ratio Container */
-        <div className="card highlight-box" style={{
+        /* Full Screen Container */
+        <div style={{
           display: 'flex',
           width: '100%',
           height: '100%',
-          maxWidth: '1400px',
-          maxHeight: '880px',
-          aspectRatio: '16/10',
-          borderRadius: '24px',
-          border: '4px solid rgba(212, 175, 55, 0.42)',
-          boxShadow: '0 30px 100px rgba(0, 0, 0, 0.95), 0 0 50px rgba(212, 175, 55, 0.15)',
           overflow: 'hidden',
           position: 'relative',
           zIndex: 10,
