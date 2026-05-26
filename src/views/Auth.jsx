@@ -738,8 +738,7 @@ function FaceUnlock({ onLogin }) {
 /* ─────────────────────────────────────────────────────────
    Sign In Form
 ───────────────────────────────────────────────────────── */
-function SignInForm({ onLogin, triggerOtp, portalMode }) {
-  const [authType,  setAuthType]  = useState('password'); // 'password' | 'face'
+function SignInForm({ onLogin, triggerOtp, portalMode, authType, setAuthType }) {
   const [email,     setEmail]     = useState('');
   const [password,  setPassword]  = useState('');
 
@@ -834,7 +833,38 @@ function SignInForm({ onLogin, triggerOtp, portalMode }) {
           </button>
         </form>
       ) : (
-        <FaceUnlock onLogin={() => onLogin({ mode: 'biometric', role: portalMode })} />
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 16,
+          textAlign: 'center',
+          padding: '20px 10px',
+          animation: 'fade-in 0.3s ease'
+        }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: '50%',
+            background: 'rgba(212,175,55,0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#d4af37', marginBottom: 4
+          }}>
+            <Shield size={20} />
+          </div>
+          <h4 style={{ fontSize: 16, fontWeight: 800, color: '#f3e5ab', margin: 0, fontFamily: "'Space Grotesk', sans-serif" }}>
+            Biometric Scan Active
+          </h4>
+          <p style={{ fontSize: 13, color: 'rgba(148,163,184,0.5)', margin: 0, lineHeight: 1.5, maxWidth: '280px' }}>
+            Please position your face in the circular scanner frame on the left side of the screen.
+          </p>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => setAuthType('password')}
+            style={{ borderRadius: 10, padding: '8px 18px', fontSize: 12, marginTop: 10 }}
+          >
+            Use Password Instead
+          </button>
+        </div>
       )}
     </div>
   );
@@ -1288,6 +1318,7 @@ function OtpModal({ email, onClose, onVerified }) {
 export default function Auth({ onLogin }) {
   const [tab,        setTab]        = useState('signin');
   const [portalMode, setPortalMode] = useState('maker');
+  const [authType,   setAuthType]   = useState('password'); // 'password' | 'face'
   const [showGoogle, setShowGoogle] = useState(false);
   const [showOtp,    setShowOtp]    = useState(false);
   const [otpEmail,   setOtpEmail]   = useState('');
@@ -1306,64 +1337,143 @@ export default function Auth({ onLogin }) {
 
   return (
     <div className="auth-page">
-      {/* ── Card ── */}
+      {/* ── Card (Laptop Ratio Landscape Container) ── */}
       <div
         className="auth-card"
         role="main"
         aria-label="Apex Colab Authentication"
-        style={{ maxHeight: '95vh', overflowY: 'auto' }}
+        style={{
+          maxHeight: '92vh',
+          maxWidth: '920px',
+          width: '90%',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1.15fr',
+          padding: '0px',
+          overflow: 'hidden',
+          borderRadius: '24px',
+          boxSizing: 'border-box'
+        }}
       >
-        {/* Logo */}
-        <div className="auth-logo">
-          <ApexLogo size={64} />
+        {/* Left Side: Branding / Security Checkpoint / Face Biometrics */}
+        <div style={{
+          background: 'rgba(15, 12, 8, 0.65)',
+          borderRight: '1px solid rgba(212, 175, 55, 0.12)',
+          padding: '40px 32px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '24px',
+          position: 'relative',
+          boxSizing: 'border-box'
+        }}>
+          {authType === 'face' && tab === 'signin' ? (
+            <FaceUnlock onLogin={() => onLogin({ mode: 'biometric', role: portalMode })} />
+          ) : (
+            <>
+              {/* Logo */}
+              <div className="auth-logo" style={{ marginBottom: 0 }}>
+                <ApexLogo size={72} />
+              </div>
+
+              {/* Security info card */}
+              <div style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: '10px'
+              }}>
+                <div style={{
+                  background: 'rgba(212,175,55,0.03)',
+                  border: '1px dashed rgba(212,175,55,0.2)',
+                  borderRadius: '16px',
+                  padding: '16px 20px',
+                  textAlign: 'center',
+                  width: '100%',
+                  maxWidth: '280px',
+                  boxSizing: 'border-box'
+                }}>
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    color: '#d4af37',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                    display: 'block',
+                    marginBottom: '4px'
+                  }}>🔒 Security Protocol</span>
+                  <p style={{
+                    fontSize: '12px',
+                    color: 'rgba(148, 163, 184, 0.6)',
+                    margin: 0,
+                    lineHeight: 1.4
+                  }}>
+                    All operations are secured via biometric facial signature matching and end-to-end ledger verification.
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Portal chooser */}
-        <PortalChooser value={portalMode} onChange={setPortalMode} />
+        {/* Right Side: Interactive Forms & Portal Selector */}
+        <div style={{
+          padding: '40px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          overflowY: 'auto',
+          boxSizing: 'border-box'
+        }}>
+          {/* Portal chooser */}
+          <PortalChooser value={portalMode} onChange={setPortalMode} />
 
-        {/* Tab switcher */}
-        <TabBar active={tab} onChange={setTab} />
+          {/* Tab switcher */}
+          <TabBar active={tab} onChange={setTab} />
 
-        {/* Forms */}
-        <div>
-          {tab === 'signin'
-            ? <SignInForm onLogin={onLogin} triggerOtp={handleTriggerOtp} portalMode={portalMode} />
-            : <RegisterForm onLogin={onLogin} portalMode={portalMode} />
-          }
-        </div>
+          {/* Forms */}
+          <div style={{ flex: 1 }}>
+            {tab === 'signin'
+              ? <SignInForm onLogin={onLogin} triggerOtp={handleTriggerOtp} portalMode={portalMode} authType={authType} setAuthType={setAuthType} />
+              : <RegisterForm onLogin={onLogin} portalMode={portalMode} />
+            }
+          </div>
 
-        {/* OAuth */}
-        <Divider />
-        <OAuthButtons onGoogleTrigger={() => setShowGoogle(true)} />
+          {/* OAuth */}
+          <Divider />
+          <OAuthButtons onGoogleTrigger={() => setShowGoogle(true)} />
 
-        {/* Demo access */}
-        <div style={{ marginTop: 20, textAlign: 'center' }}>
-          <button
-            type="button"
-            onClick={() => onLogin({ role: portalMode })}
-            style={{
-              background: 'none',
-              border: '1px dashed rgba(212,175,55,0.2)',
-              borderRadius: 10,
-              width: '100%',
-              padding: '10px 16px',
-              fontSize: 12,
-              color: 'rgba(148,163,184,0.4)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6,
-              transition: 'all 0.2s ease',
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontWeight: 600,
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.35)'; e.currentTarget.style.color = 'rgba(212,175,55,0.6)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.2)'; e.currentTarget.style.color = 'rgba(148,163,184,0.4)'; }}
-          >
-            <Sparkles size={13} />
-            Demo Access — {portalMode === 'investor' ? 'Investor' : 'Maker'} Portal
-          </button>
+          {/* Demo access */}
+          <div style={{ marginTop: 20, textAlign: 'center' }}>
+            <button
+              type="button"
+              onClick={() => onLogin({ role: portalMode })}
+              style={{
+                background: 'none',
+                border: '1px dashed rgba(212,175,55,0.2)',
+                borderRadius: 10,
+                width: '100%',
+                padding: '10px 16px',
+                fontSize: 12,
+                color: 'rgba(148,163,184,0.4)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                transition: 'all 0.2s ease',
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontWeight: 600,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.35)'; e.currentTarget.style.color = 'rgba(212,175,55,0.6)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.2)'; e.currentTarget.style.color = 'rgba(148,163,184,0.4)'; }}
+            >
+              <Sparkles size={13} />
+              Demo Access — {portalMode === 'investor' ? 'Investor' : 'Maker'} Portal
+            </button>
+          </div>
         </div>
       </div>
 
